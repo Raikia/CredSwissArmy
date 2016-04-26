@@ -27,8 +27,8 @@ BLOCKOUT
 ;
 
 
-   my ($inputValid, $inputInvalid, $inputSkipIfError);
-   $inputValid = $inputInvalid = $inputSkipIfError = 0;
+   my ($inputValid, $inputInvalid, $inputSkipIfError, $inputHash);
+   $inputValid = $inputInvalid = $inputSkipIfError = $inputHash = 0;
    my ($inputAccounts, $inputServers, $inputOutput, $inputHelp, $inputMan);
    $inputAccounts = $inputServers = $inputOutput = $inputHelp = $inputMan = '';
    # Todo: Make these following variables switches eventually
@@ -41,6 +41,7 @@ BLOCKOUT
            'invalid', \$inputInvalid,
            'output=s', \$inputOutput,
            'debug', \$dbg,
+         'ntlm', \$inputHash,
          'passdelimiter=s', \$credsSeparator,
          'delimiter=s', \$outputSeparator,
          'formatoutput=s', \$printToScreenFormat,
@@ -81,8 +82,18 @@ BLOCKOUT
 
    debugMsg("Starting the discovery process!\n");
    my $smbclient_cmd = 'smbclient';
+   if ($inputHash) {
+      $smbclient_cmd = 'pth-smbclient';
+   }
    my @smbclient_args = ('-U', '', '', '', '-c', 'dir');
-   printf $printToScreenFormat, 'Server', 'Username', 'Password', 'Response';
+   my $headerPw = 'Password';
+   my $errMsg = 'Invalid Creds';
+   if ($inputHash) {
+      $headerPw = 'NTLM';
+      $errMsg = 'Invalid Hash';
+      push(@smbclient_args, '--pw-nt-hash');
+   }
+   printf $printToScreenFormat, 'Server', 'Username', $headerPw, 'Response';
    print STDERR "--------------------------------------------------------------------------------------------------------------------------------\n" if ($printToScreenFormat eq "%-35s %-35s %-35s %-35s\n");
    my $outFH;
    if ($inputOutput ne '') {
@@ -99,8 +110,8 @@ BLOCKOUT
          my @results = <$outStream>;
          if ($results[0] =~ /LOGON_FAILURE/) { # Failed!
             if ($inputInvalid) {
-               printf $printToScreenFormat, $server, $username, $password, 'Invalid Creds';
-               printf $outFH "%s$outputSeparator%s$outputSeparator%s$outputSeparator%s\n", $server,$username,$password,'Invalid Creds' if ($outFH);
+               printf $printToScreenFormat, $server, $username, $password, $errMsg;
+               printf $outFH "%s$outputSeparator%s$outputSeparator%s$outputSeparator%s\n", $server,$username,$password,$errMsg if ($outFH);
             }
          }
          elsif (scalar(@results) > 1 and $results[1] =~ /ACCESS_DENIED/) {  # Successful creds
@@ -189,6 +200,9 @@ TBD
    
    --formatoutput <string>          Change the output format to the screen in PRINTF 
                                     format (default: "%-35s %-35s %-35s %-35s\n")
+
+   --ntlm                           Treat the passwords as NTLM hashes and attempt
+                                    to pass-the-hash!
 
 =head1 AUTHOR
 

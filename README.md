@@ -5,6 +5,8 @@ This script is designed to identify if credentials are valid, invalid, or local
 admin valid credentials within a domain network and will also check for local admin.
 It works by attempting to mount C$ on each server using different credentials.
 
+This script also accepts NTLM hashes and uses pass-the-hash to confirm them.
+
 **WARNING**:
 	Careful running a domain account against multiple servers.  If the 
 	Active Directory environment is setup to lockout accounts, you can
@@ -17,15 +19,19 @@ It works by attempting to mount C$ on each server using different credentials.
    * Kali
    * Perl
    * smbclient (should be default in kali)
+   * pth-smbclient (should be default in kali)
 
 ## Basic Usage:
    * ./CredSwissArmy.pl -a &lt;account or file&gt; -s &lt;server or file&gt; -o &lt;output_file&gt;
+   * ./CredSwissArmy.pl -a &lt;account or file&gt; -s &lt;server or file&gt; -o &lt;output_file&gt; --ntlm
 
 ## Examples:
    * ./CredSwissArmy.pl -a 'testdomain\raikia:hunter2' -s 10.10.10.10 -o results.txt
    * ./CredSwissArmy.pl -a accounts.txt -s 10.10.10.10. -o results.txt
    * ./CredSwissArmy.pl -a 'testdomain\raikia:hunter2' -s servers.txt -o results.txt
    * ./CredSwissArmy.pl -a accounts.txt -s servers.txt -o results.txt
+   * ./CredSwissArmy.pl -a 'testdomain\raikia:6608e4bc7b2b7a5f77ce3573570775af' -s 10.10.10.10 -o results.txt --ntlm
+   * ./CredSwissArmy.pl -a accounts.txt -s servers.txt -o results.txt --ntlm
 
 ## Example output file:
    ```
@@ -69,6 +75,9 @@ It works by attempting to mount C$ on each server using different credentials.
 
 	You can supply either a single account/server via commandline, or
 	give a filename with multiple values separated by a new line
+
+   * --ntlm
+        >       Treat the passwords as NTLM hashes and attempt to pass-the-hash with them
 
 
 

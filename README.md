@@ -77,7 +77,7 @@ This script also accepts NTLM hashes and uses pass-the-hash to confirm them.
 	give a filename with multiple values separated by a new line
 
    * --ntlm
-        >       Treat the passwords as NTLM hashes and attempt to pass-the-hash with them
+    >   Treat the passwords as NTLM hashes and attempt to pass-the-hash with them
 
 
 

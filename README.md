@@ -1,3 +1,7 @@
+THIS TOOL IS NOW DEPRECATED, PLEASE CHECK OUT CREDNINJA FOR THESE FEATURES AND MORE:  https://github.com/Raikia/CredNinja
+======
+
+
 CredSwissArmy
 ======
 		
